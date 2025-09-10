@@ -34,7 +34,7 @@ spec:
         workflow_id: greet
         parameters:
           inputData:
-            language: English
+            language: Kannada
             name: ${{ parameters.name }}
 
 
