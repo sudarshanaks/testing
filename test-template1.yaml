@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: run-external-workflow
-  title: Run External Workflow
+  name: run-external-workflow1
+  title: Run External Workflow1
   description: Triggers an external workflow using the Orchestrator plugin.
 spec:
   owner: user:guest
