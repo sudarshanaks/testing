@@ -18,15 +18,7 @@ spec:
       title: Workflow Parameters
       type: string
       description: Parameters to pass to the external workflow.
-      properties:
-        name:
-          type: string
-          title: Name
-          description: A name parameter for the workflow.
-        environment:
-          type: string
-          title: Environment
-          description: The target environment for the workflow.
+
 
   steps:
     - id: run-orchestrator-workflow
