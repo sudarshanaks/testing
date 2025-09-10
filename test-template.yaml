@@ -16,7 +16,7 @@ spec:
       ui:autofocus: true
     - id: workflow_parameters
       title: Workflow Parameters
-      type: object
+      type: string
       description: Parameters to pass to the external workflow.
       properties:
         name:
@@ -34,7 +34,9 @@ spec:
       action: orchestrator:workflow:run
       input:
         workflow_id: ${{ parameters.workflow_id }}
-        parameters: ${{ parameters.workflow_parameters }}
+        parameters: 
+          name: sudarks
+          language: English
     - id: log-output
       name: Log Output
       action: builtin:log
