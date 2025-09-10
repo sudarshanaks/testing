@@ -31,9 +31,7 @@ spec:
       name: workflow
       action: orchestrator:workflow:run
       input:
-        parameters:
-          language: English
-          name: ${{ parameters.name }}
+        parameters: {"inputData":{"language":"English","name":"John"},"authTokens":[]}
 
 
   # some outputs which are saved along with the job for use in the frontend
