@@ -15,6 +15,7 @@ spec:
     - title: Fill in some steps
       required:
         - name
+        - language
       properties:
         name:
           title: Name
