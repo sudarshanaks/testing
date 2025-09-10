@@ -1,0 +1,43 @@
+# Notice the v1beta3 version
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+# some metadata about the template itself
+metadata:
+  name: orchestrator-workflow-example
+  title: Test Action template
+  description: scaffolder v1beta3 template demo
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  # these are the steps which are rendered in the frontend with the form input
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+
+  # here's the steps that are executed in series in the scaffolder backend
+  steps:
+
+    - id: trigger-workflow
+      name: workflow
+      action: orchestrator:workflow:run
+      input:
+        language: English
+        name: ${{ parameters.name }}
+
+
+  # some outputs which are saved along with the job for use in the frontend
+  output:
+    links:
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
