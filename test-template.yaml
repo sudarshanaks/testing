@@ -14,10 +14,6 @@ spec:
       type: string
       description: The ID of the external workflow to run.
       ui:autofocus: true
-    - id: workflow_parameters
-      title: Workflow Parameters
-      type: string
-      description: Parameters to pass to the external workflow.
 
 
   steps:
