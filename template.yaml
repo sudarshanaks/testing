@@ -23,6 +23,14 @@ spec:
           ui:autofocus: true
           ui:options:
             rows: 5
+        language:
+          title: Language
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+            
 
   # here's the steps that are executed in series in the scaffolder backend
   steps:
@@ -33,7 +41,7 @@ spec:
       input:
         workflow_id: greet
         parameters:
-          language: Kannada
+          language: ${{ parameters.language }}
           name: ${{ parameters.name }}
 
 
