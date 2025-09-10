@@ -30,6 +30,8 @@ spec:
     - id: trigger-workflow
       name: workflow
       action: orchestrator:workflow:run
+      input:
+        workflow_id: greet
       values:
         parameters: {"inputData":{"language":"English","name":"John"},"authTokens":[]}
 
