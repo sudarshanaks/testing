@@ -30,7 +30,7 @@ spec:
     - id: trigger-workflow
       name: workflow
       action: orchestrator:workflow:run
-      input:
+      values:
         parameters: {"inputData":{"language":"English","name":"John"},"authTokens":[]}
 
 
