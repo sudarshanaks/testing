@@ -33,8 +33,9 @@ spec:
       input:
         workflow_id: greet
         parameters:
-          language: English
-          name: ${{ parameters.name }}
+          inputData:
+            language: English
+            name: ${{ parameters.name }}
 
 
   # some outputs which are saved along with the job for use in the frontend
