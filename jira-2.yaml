@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: ica-onboarding-request
-  title: Request ICA onboarding
+  name: ica-onboarding-1
+  title: ICA Onboarding V1
   description: Create a new Jira issue with automatic duplicate detection
   tags:
     - jira
@@ -76,75 +76,69 @@ spec:
           title: Geographical Region
           type: string
           description: Project geographical region
-          ui:field: Select
           enum:
             - "AMERICAS"
             - "APAC"
             - "EMEA"
             - "JAPAN"
           default: "AMERICAS"
+        # Dynamic dropdown for market based on region
         projectMarket:
           title: Market
           type: string
           description: Project market
-          ui:field: Select
-          allOf:
-            - if:
-                properties:
-                  projectRegion:
-                    const: "AMERICAS"
-              then:
-                enum:
-                  - "Canadian Market"
-                  - "Latin America Market"
-                  - "US Top Market"
-                  - "Latin America"
-            - if:
-                properties:
-                  projectRegion:
-                    const: "APAC"
-              then:
-                enum:
-                  - "ASEAN"
-                  - "ASEAN Market"
-                  - "ASEANZK Market"
-                  - "Australia/New Zealand"
-                  - "Australia/New Zealand Market"
-                  - "Greater China Group Market"
-                  - "Greater China Market"
-                  - "India/South Asia"
-                  - "India/South Asia Market"
-                  - "Korea Market"
-            - if:
-                properties:
-                  projectRegion:
-                    const: "EMEA"
-              then:
-                enum:
-                  - "BeNeLux"
-                  - "Central/Eastern Europe"
-                  - "Central/Eastern Europe Market"
-                  - "DACH"
-                  - "DACH Market"
-                  - "France Market"
-                  - "Italy Market"
-                  - "Middle East/Africa"
-                  - "Middle East/Africa Market"
-                  - "NCEE Market"
-                  - "NorBNL Market"
-                  - "Nordic"
-                  - "Northern Europe Market"
-                  - "SPGI"
-                  - "SPGI Market"
-                  - "UKI"
-                  - "UKI Market"
-            - if:
-                properties:
-                  projectRegion:
-                    const: "JAPAN"
-              then:
-                enum:
-                  - "Japan Market"
+          dependencies:
+            projectRegion:
+              oneOf:
+                - properties:
+                    projectRegion:
+                      enum: ["AMERICAS"]
+                  enum:
+                    - "Canadian Market"
+                    - "Latin America Market"
+                    - "US Top Market"
+                    - "Latin America"
+                - properties:
+                    projectRegion:
+                      enum: ["APAC"]
+                  enum:
+                    - "ASEAN"
+                    - "ASEAN Market"
+                    - "ASEANZK Market"
+                    - "Australia/New Zealand"
+                    - "Australia/New Zealand Market"
+                    - "Greater China Group Market"
+                    - "Greater China Market"
+                    - "India/South Asia"
+                    - "India/South Asia Market"
+                    - "Korea Market"
+                - properties:
+                    projectRegion:
+                      enum: ["EMEA"]
+                  enum:
+                    - "BeNeLux"
+                    - "Central/Eastern Europe"
+                    - "Central/Eastern Europe Market"
+                    - "DACH"
+                    - "DACH Market"
+                    - "France Market"
+                    - "Italy Market"
+                    - "Middle East/Africa"
+                    - "Middle East/Africa Market"
+                    - "NCEE Market"
+                    - "NorBNL Market"
+                    - "Nordic"
+                    - "Northern Europe Market"
+                    - "SPGI"
+                    - "SPGI Market"
+                    - "UKI"
+                    - "UKI Market"
+                - properties:
+                    projectRegion:
+                      enum: ["JAPAN"]
+                  enum:
+                    - "Japan Market"
+
         projectSector:
           title: Sector
           type: string
@@ -216,7 +210,7 @@ spec:
           client_location: ${{ parameters.clientLocation }}
           ica_instance: ${{ parameters.icaInstance }}
           project_region: ${{ parameters.projectRegion }}
-          project_market: ${{ parameters.projectMarket }}
+          project_market: ${{ parameters.projectMarket | default('') }}
           project_sector: ${{ parameters.projectSector }}
           project_assistant_pack: ${{ parameters.projectAssistantPack }}
           project_productivity_asset: ${{ parameters.projectProductivityAsset }}
