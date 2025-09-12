@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: ica-onboarding-5
-  title: ICA Onboarding V5
+  name: ica-onboarding-7
+  title: ICA Onboarding V7
   description: Create a new Jira issue with automatic duplicate detection
   tags:
     - jira
@@ -13,6 +13,7 @@ spec:
   type: service
   
   parameters:
+
 
     - title: Project Information
       required:
@@ -82,12 +83,16 @@ spec:
           title: ICA Instance
           type: string
           description: ICA Regional Instance for onboarding
-          default: "US: us.ica.ibm.com"
+          ui:field: "Select"
+          ui:options:
+            label: "ICA Instance"
         projectRegion:
           title: Geographical Region
           type: string
           description: Project geographical region
           ui:field: "Select"
+          ui:options:
+            label: "Geographical Region"
           enum:
             - "AMERICAS"
             - "APAC"
@@ -100,6 +105,8 @@ spec:
           type: string
           description: Project market
           ui:field: "Select"
+          ui:options:
+            label: "Market"
                     
         projectSector:
           title: Sector
@@ -116,11 +123,22 @@ spec:
                   title: Market
                   type: string
                   description: Project market in Americas
+                  ui:options:
+                    label: "Market"
                   enum:
                     - "Canadian Market"
                     - "Latin America Market"
                     - "US Top Market"
                     - "Latin America"
+                icaInstance:
+                  title: ICA Instance
+                  type: string
+                  description: ICA Regional Instance for Americas
+                  ui:options:
+                    label: "ICA Instance"
+                  enum:
+                    - "US: us.ica.ibm.com"
+                    - "Canada: canada.ica.ibm.com"
             - properties:
                 projectRegion:
                   const: "APAC"
@@ -128,6 +146,8 @@ spec:
                   title: Market
                   type: string
                   description: Project market in APAC
+                  ui:options:
+                    label: "Market"
                   enum:
                     - "ASEAN"
                     - "ASEAN Market"
@@ -139,6 +159,14 @@ spec:
                     - "India/South Asia"
                     - "India/South Asia Market"
                     - "Korea Market"
+                icaInstance:
+                  title: ICA Instance
+                  type: string
+                  description: ICA Regional Instance for APAC
+                  ui:options:
+                    label: "ICA Instance"
+                  enum:
+                    - "Australia: au.ica.ibm.com"
             - properties:
                 projectRegion:
                   const: "EMEA"
@@ -146,6 +174,8 @@ spec:
                   title: Market
                   type: string
                   description: Project market in EMEA
+                  ui:options:
+                    label: "Market"
                   enum:
                     - "BeNeLux"
                     - "Central/Eastern Europe"
@@ -164,6 +194,15 @@ spec:
                     - "SPGI Market"
                     - "UKI"
                     - "UKI Market"
+                icaInstance:
+                  title: ICA Instance
+                  type: string
+                  description: ICA Regional Instance for EMEA
+                  ui:options:
+                    label: "ICA Instance"
+                  enum:
+                    - "UKI: uki.ica.ibm.com"
+                    - "R-EMEA: remea.ica.ibm.com"
             - properties:
                 projectRegion:
                   const: "JAPAN"
@@ -171,8 +210,18 @@ spec:
                   title: Market
                   type: string
                   description: Project market in Japan
+                  ui:options:
+                    label: "Market"
                   enum:
                     - "Japan Market"
+                icaInstance:
+                  title: ICA Instance
+                  type: string
+                  description: ICA Regional Instance for Japan
+                  ui:options:
+                    label: "ICA Instance"
+                  enum:
+                    - "Japan: japan.ica.ibm.com"
 
     - title: Project Assets
       required:
@@ -230,6 +279,8 @@ spec:
         headers:
           Content-Type: application/json
         body:
+          jira_token: ${{ parameters.jiraToken }}
+          jira_username: ""
           client_name: ${{ parameters.clientName }}
           project_contact_name: ${{ parameters.projectContactName }}
           project_offering_name: ${{ parameters.projectOfferingName }}
