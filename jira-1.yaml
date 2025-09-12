@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: jira-issue-creator
-  title: Create Jira Issue
+  name: ica-onboarding
+  title: ICA onboarding Request
   description: Create a new Jira issue with automatic duplicate detection
   tags:
     - jira
