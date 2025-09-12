@@ -14,7 +14,6 @@ spec:
   
   parameters:
 
-
     - title: Project Information
       required:
         - projectContactName
@@ -73,6 +72,7 @@ spec:
       required:
         - clientName
         - clientLocation
+        - projectRegion
       properties:
         clientName:
           title: Client Name
@@ -83,7 +83,6 @@ spec:
           type: string
           description: Location of the client
           default: "Canada"
-
         projectRegion:
           title: Geographical Region
           type: string
@@ -93,8 +92,7 @@ spec:
             - "APAC"
             - "EMEA"
             - "JAPAN"
-          default: "AMERICAS"
-                    
+          default: "AMERICAS"                 
         projectSector:
           title: Sector
           type: string
@@ -126,6 +124,9 @@ spec:
                   enum:
                     - "US: us.ica.ibm.com"
                     - "Canada: canada.ica.ibm.com"
+              required:
+                - projectMarket
+                - icaInstance
             - properties:
                 projectRegion:
                   const: "APAC"
@@ -154,6 +155,9 @@ spec:
                     label: "ICA Instance"
                   enum:
                     - "Australia: au.ica.ibm.com"
+              required:
+                - projectMarket
+                - icaInstance
             - properties:
                 projectRegion:
                   const: "EMEA"
@@ -190,6 +194,9 @@ spec:
                   enum:
                     - "UKI: uki.ica.ibm.com"
                     - "R-EMEA: remea.ica.ibm.com"
+              required:
+                - projectMarket
+                - icaInstance
             - properties:
                 projectRegion:
                   const: "JAPAN"
@@ -209,6 +216,79 @@ spec:
                     label: "ICA Instance"
                   enum:
                     - "Japan: japan.ica.ibm.com"
+              required:
+                - projectMarket
+                - icaInstance
+
+    - title: Migration Options
+      required:
+        - migrationFromIcaGlobal
+      properties:
+        migrationFromIcaGlobal:
+          title: Are you migrating from the ICA Global instance (servicesessentials.ibm.com)?
+          type: string
+          description: "Onboarded accounts will be structured in ICA as 'Account > Project Team'"
+          ui:widget: "radio"
+          enum:
+            - "Yes"
+            - "No"
+          default: "No"
+          ui:description: "Note: PoC Accounts will not be migrated"
+      dependencies:
+        migrationFromIcaGlobal:
+          oneOf:
+            - properties:
+                migrationFromIcaGlobal:
+                  enum:
+                    - "Yes"
+                migrationAccountsProjectTeams:
+                  title: Please provide the names of the Account(s) and their associated Project Teams from the ICA Global instance that need to be migrated to the ICA Regional instance
+                  type: string
+                  description: "Enter accounts and project teams to migrate"
+                  ui:widget: "textarea"
+                migrationIcaTeams:
+                  title: If the Accounts were not created, kindly share the list of ICA Teams names from ICA Global instance be onboarded
+                  type: string
+                  description: "Example 1: Account 1 > Project Team A, Project Team B\nExample 2: Team A, Team B, Team C"
+                  ui:widget: "textarea"
+              required:
+                - "migrationAccountsProjectTeams"
+            - properties:
+                migrationFromIcaGlobal:
+                  enum:
+                    - "No"
+    
+    - title: Support Team Location
+      required:
+        - supportTeamLocationRestrictions
+      properties:
+        supportTeamLocationRestrictions:
+          title: Support team location restrictions?
+          type: string
+          description: "Are there any geographical, regulatory, or security-based restrictions on the locations from which the support team can operate?"
+          ui:widget: "radio"
+          enum:
+            - "YES"
+            - "NO"
+          default: "NO"
+      dependencies:
+        supportTeamLocationRestrictions:
+          oneOf:
+            - properties:
+                supportTeamLocationRestrictions:
+                  enum:
+                    - "YES"
+                supportTeamLocationDetails:
+                  title: Pls provide the details of support team location restrictions
+                  type: string
+                  description: "Details of any geographical, regulatory, or security-based restrictions"
+                  ui:widget: "textarea"
+              required:
+                - "supportTeamLocationDetails"
+            - properties:
+                supportTeamLocationRestrictions:
+                  enum:
+                    - "NO"
 
     - title: Project Assets
       required:
@@ -293,65 +373,6 @@ spec:
           title: Account Team Name
           type: string
           description: Name of the account team in ICA
-        migrationFromIcaGlobal:
-          title: Are you migrating from the ICA Global instance (servicesessentials.ibm.com)?
-          type: string
-          description: "Onboarded accounts will be structured in ICA as 'Account > Project Team'"
-          ui:widget: "radio"
-          enum:
-            - "Yes"
-            - "No"
-          default: "No"
-          ui:description: "Note: PoC Accounts will not be migrated"
-        supportTeamLocationRestrictions:
-          title: Support team location restrictions?
-          type: string
-          description: "Are there any geographical, regulatory, or security-based restrictions on the locations from which the support team can operate?"
-          ui:widget: "radio"
-          enum:
-            - "YES"
-            - "NO"
-          default: "NO"
-      dependencies:
-        migrationFromIcaGlobal:
-          oneOf:
-            - properties:
-                migrationFromIcaGlobal:
-                  enum:
-                    - "Yes"
-                migrationAccountsProjectTeams:
-                  title: Please provide the names of the Account(s) and their associated Project Teams from the ICA Global instance that need to be migrated to the ICA Regional instance
-                  type: string
-                  description: "Enter accounts and project teams to migrate"
-                  ui:widget: "textarea"
-                migrationIcaTeams:
-                  title: If the Accounts were not created, kindly share the list of ICA Teams names from ICA Global instance be onboarded
-                  type: string
-                  description: "Example 1: Account 1 > Project Team A, Project Team B\nExample 2: Team A, Team B, Team C"
-                  ui:widget: "textarea"
-              required:
-                - "migrationAccountsProjectTeams"
-            - properties:
-                migrationFromIcaGlobal:
-                  enum:
-                    - "No"
-        supportTeamLocationRestrictions:
-          oneOf:
-            - properties:
-                supportTeamLocationRestrictions:
-                  enum:
-                    - "YES"
-                supportTeamLocationDetails:
-                  title: Pls provide the details of support team location restrictions
-                  type: string
-                  description: "Details of any geographical, regulatory, or security-based restrictions"
-                  ui:widget: "textarea"
-              required:
-                - "supportTeamLocationDetails"
-            - properties:
-                supportTeamLocationRestrictions:
-                  enum:
-                    - "NO"
 
   steps:
     - id: triggerWebhook
