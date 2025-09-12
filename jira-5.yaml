@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: ica-onboarding-3
-  title: ICA Onboarding V3
+  name: ica-onboarding-5
+  title: ICA Onboarding V5
   description: Create a new Jira issue with automatic duplicate detection
   tags:
     - jira
@@ -100,82 +100,79 @@ spec:
           type: string
           description: Project market
           ui:field: "Select"
-          ui:options:
-            required: true
-          
-        dependencies:
-          projectRegion:
-            oneOf:
-              - properties:
-                  projectRegion:
-                    const: "AMERICAS"
-                  projectMarket:
-                    title: Market
-                    type: string
-                    description: Project market in Americas
-                    enum:
-                      - "Canadian Market"
-                      - "Latin America Market"
-                      - "US Top Market"
-                      - "Latin America"
-              - properties:
-                  projectRegion:
-                    const: "APAC"
-                  projectMarket:
-                    title: Market
-                    type: string
-                    description: Project market in APAC
-                    enum:
-                      - "ASEAN"
-                      - "ASEAN Market"
-                      - "ASEANZK Market"
-                      - "Australia/New Zealand"
-                      - "Australia/New Zealand Market"
-                      - "Greater China Group Market"
-                      - "Greater China Market"
-                      - "India/South Asia"
-                      - "India/South Asia Market"
-                      - "Korea Market"
-              - properties:
-                  projectRegion:
-                    const: "EMEA"
-                  projectMarket:
-                    title: Market
-                    type: string
-                    description: Project market in EMEA
-                    enum:
-                      - "BeNeLux"
-                      - "Central/Eastern Europe"
-                      - "Central/Eastern Europe Market"
-                      - "DACH"
-                      - "DACH Market"
-                      - "France Market"
-                      - "Italy Market"
-                      - "Middle East/Africa"
-                      - "Middle East/Africa Market"
-                      - "NCEE Market"
-                      - "NorBNL Market"
-                      - "Nordic"
-                      - "Northern Europe Market"
-                      - "SPGI"
-                      - "SPGI Market"
-                      - "UKI"
-                      - "UKI Market"
-              - properties:
-                  projectRegion:
-                    const: "JAPAN"
-                  projectMarket:
-                    title: Market
-                    type: string
-                    description: Project market in Japan
-                    enum:
-                      - "Japan Market"
                     
         projectSector:
           title: Sector
           type: string
           description: Project sector
           default: "IBM Account / Internal"
+      dependencies:
+        projectRegion:
+          oneOf:
+            - properties:
+                projectRegion:
+                  const: "AMERICAS"
+                projectMarket:
+                  title: Market
+                  type: string
+                  description: Project market in Americas
+                  enum:
+                    - "Canadian Market"
+                    - "Latin America Market"
+                    - "US Top Market"
+                    - "Latin America"
+            - properties:
+                projectRegion:
+                  const: "APAC"
+                projectMarket:
+                  title: Market
+                  type: string
+                  description: Project market in APAC
+                  enum:
+                    - "ASEAN"
+                    - "ASEAN Market"
+                    - "ASEANZK Market"
+                    - "Australia/New Zealand"
+                    - "Australia/New Zealand Market"
+                    - "Greater China Group Market"
+                    - "Greater China Market"
+                    - "India/South Asia"
+                    - "India/South Asia Market"
+                    - "Korea Market"
+            - properties:
+                projectRegion:
+                  const: "EMEA"
+                projectMarket:
+                  title: Market
+                  type: string
+                  description: Project market in EMEA
+                  enum:
+                    - "BeNeLux"
+                    - "Central/Eastern Europe"
+                    - "Central/Eastern Europe Market"
+                    - "DACH"
+                    - "DACH Market"
+                    - "France Market"
+                    - "Italy Market"
+                    - "Middle East/Africa"
+                    - "Middle East/Africa Market"
+                    - "NCEE Market"
+                    - "NorBNL Market"
+                    - "Nordic"
+                    - "Northern Europe Market"
+                    - "SPGI"
+                    - "SPGI Market"
+                    - "UKI"
+                    - "UKI Market"
+            - properties:
+                projectRegion:
+                  const: "JAPAN"
+                projectMarket:
+                  title: Market
+                  type: string
+                  description: Project market in Japan
+                  enum:
+                    - "Japan Market"
 
     - title: Project Assets
       required:
