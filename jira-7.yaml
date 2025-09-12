@@ -474,7 +474,6 @@ spec:
           project_sector: ${{ parameters.projectSector }}
           project_assistant_packs: ${{ parameters.projectAssistantPacks }}
           project_productivity_assets: ${{ parameters.projectProductivityAssets }}
-          account_coach: ${{ parameters.accountCoach }}
           account_coach_email: ${{ parameters.accountCoachEmail }}
           account_mentor_email: ${{ parameters.accountMentorEmail }}
           account_team_name: ${{ parameters.accountTeamName }}
