@@ -1,0 +1,293 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: jira-issue-creator
+  title: Create Jira Issue
+  description: Create a new Jira issue with automatic duplicate detection
+  tags:
+    - jira
+    - issue
+    - automation
+spec:
+  owner: user:guest
+  type: service
+  
+  parameters:
+    - title: Jira Authentication
+      required:
+        - jiraToken
+      properties:
+        jiraToken:
+          title: Jira API Token
+          type: string
+          ui:field: Password
+          description: Your Jira API token for authentication
+        jiraProjectId:
+          title: Jira Project ID
+          type: string
+          description: The Jira project key/ID
+          default: "SSUIN"
+        jiraUsername:
+          title: Jira Username
+          type: string
+          description: Username of the creator (your Jira username)
+
+    - title: Issue Details
+      required:
+        - jiraIssueType
+        - jiraPriority
+        - clientName
+      properties:
+        jiraIssueType:
+          title: Issue Type
+          type: string
+          description: Type of Jira issue to create
+          default: "Change Request"
+          enum:
+            - "Change Request"
+            - "Task"
+            - "Story"
+            - "Bug"
+        jiraPriority:
+          title: Priority
+          type: string
+          description: Priority of the Jira issue
+          default: "High"
+          enum:
+            - "Highest"
+            - "High"
+            - "Medium"
+            - "Low"
+            - "Lowest"
+        clientName:
+          title: Client Name
+          type: string
+          description: Name of the client (will be used in issue title)
+
+    - title: Project Information
+      required:
+        - projectContactName
+        - projectContractId
+        - projectContractEndDate
+        - projectGbgId
+      properties:
+        projectContactName:
+          title: Project Contact Name
+          type: string
+          description: Contact name/email for the project
+        projectOfferingName:
+          title: Project Offering Name
+          type: string
+          description: Name of the offering
+          default: "IBM Access"
+        projectContractId:
+          title: Contract ID
+          type: string
+          description: Project contract ID
+        projectContractEndDate:
+          title: Contract End Date
+          type: string
+          description: Project contract end date
+        projectGbgId:
+          title: GBG ID
+          type: string
+          description: Project GBG ID
+        projectTypeOfUser:
+          title: Type of Users
+          type: string
+          description: Type of users for this project
+          default: "IBM Internal Only"
+        projectNoOfExpectedEndUsers:
+          title: Number of Expected End Users
+          type: string
+          description: Number of expected end users
+          default: "3"
+        projectDataUsage:
+          title: Data Usage
+          type: string
+          description: Description of data usage
+          default: "No production data or personal/business sensitive content will be used."
+
+    - title: Client Information
+      required:
+        - clientLocation
+      properties:
+        clientLocation:
+          title: Client Location
+          type: string
+          description: Location of the client
+          default: "Canada"
+        icaInstance:
+          title: ICA Instance
+          type: string
+          description: ICA Regional Instance for onboarding
+          default: "US: us.ica.ibm.com"
+        projectRegion:
+          title: Geographical Region
+          type: string
+          description: Project geographical region
+          ui:field: Select
+          enum:
+            - "AMERICAS"
+            - "APAC"
+            - "EMEA"
+            - "JAPAN"
+          default: "AMERICAS"
+        projectMarket:
+          title: Market
+          type: string
+          description: Project market
+          ui:field: Select
+          ui:options:
+            dependencies:
+              projectRegion:
+                oneOf:
+                  - properties:
+                      projectRegion:
+                        enum: ["AMERICAS"]
+                    enum:
+                      - "Canadian Market"
+                      - "Latin America Market"
+                      - "US Top Market"
+                      - "Latin America"
+                  - properties:
+                      projectRegion:
+                        enum: ["APAC"]
+                    enum:
+                      - "ASEAN"
+                      - "ASEAN Market"
+                      - "ASEANZK Market"
+                      - "Australia/New Zealand"
+                      - "Australia/New Zealand Market"
+                      - "Greater China Group Market"
+                      - "Greater China Market"
+                      - "India/South Asia"
+                      - "India/South Asia Market"
+                      - "Korea Market"
+                  - properties:
+                      projectRegion:
+                        enum: ["EMEA"]
+                    enum:
+                      - "BeNeLux"
+                      - "Central/Eastern Europe"
+                      - "Central/Eastern Europe Market"
+                      - "DACH"
+                      - "DACH Market"
+                      - "France Market"
+                      - "Italy Market"
+                      - "Middle East/Africa"
+                      - "Middle East/Africa Market"
+                      - "NCEE Market"
+                      - "NorBNL Market"
+                      - "Nordic"
+                      - "Northern Europe Market"
+                      - "SPGI"
+                      - "SPGI Market"
+                      - "UKI"
+                      - "UKI Market"
+                  - properties:
+                      projectRegion:
+                        enum: ["JAPAN"]
+                    enum:
+                      - "Japan Market"
+        projectSector:
+          title: Sector
+          type: string
+          description: Project sector
+          default: "IBM Account / Internal"
+
+    - title: Project Assets
+      required:
+        - accountCoachEmail
+        - accountMentorEmail
+        - accountTeamName
+      properties:
+        projectAssistantPack:
+          title: Assistant Pack in Scope
+          type: string
+          description: Assistant pack in scope
+          default: "Assistant Pack for Quality Engineering"
+        projectProductivityAsset:
+          title: Productivity Asset in Scope
+          type: string
+          description: Productivity asset in scope
+          default: "IBM Ignite Quality and Test Plus (694989T)"
+        llmModels:
+          title: LLM Models in Scope
+          type: string
+          description: LLM models in scope
+          default: "Not specified"
+        otherAssets:
+          title: Other Assets in Scope
+          type: string
+          description: Other assets in scope
+          default: "Not specified"
+        accountCoachEmail:
+          title: Account Coach Email
+          type: string
+          description: Email of the account coach
+        accountMentorEmail:
+          title: Account Mentor Email
+          type: string
+          description: Email of the account mentor
+        accountTeamName:
+          title: Account Team Name
+          type: string
+          description: Name of the account team in ICA
+        migrationFromIca:
+          title: Migration from ICA Global Instance
+          type: string
+          description: Migration from ICA Global Instance details
+          default: "No migration is required"
+
+  steps:
+    - id: triggerWebhook
+      name: Trigger Jira Issue Creation
+      action: http:backstage:trigger
+      input:
+        url: ${{ parameters.webhookUrl | default('http://jira-issue-listener.default.svc.cluster.local:8080') }}
+        method: POST
+        headers:
+          Content-Type: application/json
+        body:
+          jira_token: ${{ parameters.jiraToken }}
+          jira_api_url: ${{ parameters.jiraApiUrl }}
+          jira_project_id: ${{ parameters.jiraProjectId }}
+          jira_issue_type: ${{ parameters.jiraIssueType }}
+          jira_priority: ${{ parameters.jiraPriority }}
+          jira_username: ${{ parameters.jiraUsername }}
+          client_name: ${{ parameters.clientName }}
+          project_contact_name: ${{ parameters.projectContactName }}
+          project_offering_name: ${{ parameters.projectOfferingName }}
+          project_contract_id: ${{ parameters.projectContractId }}
+          project_contract_end_date: ${{ parameters.projectContractEndDate }}
+          project_gbg_id: ${{ parameters.projectGbgId }}
+          project_type_of_user: ${{ parameters.projectTypeOfUser }}
+          project_no_of_expected_end_users: ${{ parameters.projectNoOfExpectedEndUsers }}
+          project_data_usage: ${{ parameters.projectDataUsage }}
+          client_location: ${{ parameters.clientLocation }}
+          ica_instance: ${{ parameters.icaInstance }}
+          project_region: ${{ parameters.projectRegion }}
+          project_market: ${{ parameters.projectMarket }}
+          project_sector: ${{ parameters.projectSector }}
+          project_assistant_pack: ${{ parameters.projectAssistantPack }}
+          project_productivity_asset: ${{ parameters.projectProductivityAsset }}
+          account_coach_email: ${{ parameters.accountCoachEmail }}
+          account_mentor_email: ${{ parameters.accountMentorEmail }}
+          account_team_name: ${{ parameters.accountTeamName }}
+          llm_models: ${{ parameters.llmModels }}
+          other_assets: ${{ parameters.otherAssets }}
+          migration_from_ica: ${{ parameters.migrationFromIca }}
+
+    - id: logSummary
+      name: Summary
+      action: debug:log
+      input:
+        message: |
+          Triggered Jira issue creation for client: ${{ parameters.clientName }}
+          Check the Tekton pipeline status for results.
+
+  output:
+    links:
+      - title: Tekton Dashboard
+        url: ${{ parameters.tektonDashboardUrl | default('http://tekton-dashboard.tekton-pipelines.svc.cluster.local:8080') }}
