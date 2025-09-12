@@ -303,18 +303,29 @@ spec:
             - "No"
           default: "No"
           ui:description: "Note: PoC Accounts will not be migrated"
-        migrationAccountsProjectTeams:
-          title: Please provide the names of the Account(s) and their associated Project Teams from the ICA Global instance that need to be migrated to the ICA Regional instance
-          type: string
-          description: "Enter accounts and project teams to migrate"
-          ui:widget: "textarea"
-          default: ""
-        migrationIcaTeams:
-          title: If the Accounts were not created, kindly share the list of ICA Teams names from ICA Global instance be onboarded
-          type: string
-          description: "Example 1: Account 1 > Project Team A, Project Team B\nExample 2: Team A, Team B, Team C"
-          ui:widget: "textarea"
-          default: ""
+      dependencies:
+        migrationFromIcaGlobal:
+          oneOf:
+            - properties:
+                migrationFromIcaGlobal:
+                  enum:
+                    - "Yes"
+                migrationAccountsProjectTeams:
+                  title: Please provide the names of the Account(s) and their associated Project Teams from the ICA Global instance that need to be migrated to the ICA Regional instance
+                  type: string
+                  description: "Enter accounts and project teams to migrate"
+                  ui:widget: "textarea"
+                migrationIcaTeams:
+                  title: If the Accounts were not created, kindly share the list of ICA Teams names from ICA Global instance be onboarded
+                  type: string
+                  description: "Example 1: Account 1 > Project Team A, Project Team B\nExample 2: Team A, Team B, Team C"
+                  ui:widget: "textarea"
+              required:
+                - "migrationAccountsProjectTeams"
+            - properties:
+                migrationFromIcaGlobal:
+                  enum:
+                    - "No"
         supportTeamLocationRestrictions:
           title: Support team location restrictions?
           type: string
@@ -324,12 +335,24 @@ spec:
             - "YES"
             - "NO"
           default: "NO"
-        supportTeamLocationDetails:
-          title: Pls provide the details of support team location restrictions
-          type: string
-          description: "Details of any geographical, regulatory, or security-based restrictions"
-          ui:widget: "textarea"
-          default: ""
+      dependencies:
+        supportTeamLocationRestrictions:
+          oneOf:
+            - properties:
+                supportTeamLocationRestrictions:
+                  enum:
+                    - "YES"
+                supportTeamLocationDetails:
+                  title: Pls provide the details of support team location restrictions
+                  type: string
+                  description: "Details of any geographical, regulatory, or security-based restrictions"
+                  ui:widget: "textarea"
+              required:
+                - "supportTeamLocationDetails"
+            - properties:
+                supportTeamLocationRestrictions:
+                  enum:
+                    - "NO"
 
   steps:
     - id: triggerWebhook
