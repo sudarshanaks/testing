@@ -92,14 +92,7 @@ spec:
             - "APAC"
             - "EMEA"
             - "JAPAN"
-          default: "AMERICAS"
-        icaInstance:
-          title: ICA Instance
-          type: string
-          description: ICA Regional Instance for onboarding
-          ui:field: "Select"
-          ui:options:
-            label: "ICA Instance"        
+          default: "AMERICAS"    
         projectMarket:
           title: Market
           type: string
