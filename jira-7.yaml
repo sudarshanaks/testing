@@ -326,11 +326,13 @@ spec:
           type: string
           format: email
           description: Email of the account coach
+          ui:widget: emailinput
         accountMentorEmail:
           title: Account Mentor Email
           type: string
           format: email
           description: Email of the account mentor
+          ui:widget: emailinput
         accountTeamName:
           title: Account Team Name
           type: string
@@ -426,6 +428,8 @@ spec:
                 accountCoach:
                   enum:
                     - "Other"
+                accountCoachEmail:
+                  ui:widget: emailinput
               required:
                 - accountCoachEmail
             - properties:
@@ -436,6 +440,8 @@ spec:
                     - "Seelan (jebgnana@in.ibm.com)"
                     - "Renjith (renjithrk@in.ibm.com)"
                     - "Rekha (rmadakka@in.ibm.com)"
+                accountCoachEmail:
+                  ui:widget: hidden
 
   steps:
     - id: triggerWebhook
