@@ -21,17 +21,21 @@ spec:
         - projectContractId
         - projectContractEndDate
         - projectGbgId
+        - offeringSelection
       properties:
+        offeringSelection:
+          title: Offering Selection
+          type: string
+          description: "Note: For POC, pls create a team in corresponding ICA regional instances by providing the Opportunity ID"
+          enum:
+            - "SaaS Delivery - IBM Access"
+            - "SaaS Delivery - IBM & Client Access"
+          default: "SaaS Delivery - IBM Access"
         projectContactName:
           title: Project Contact Name
           type: string
           format: email
           description: Contact name/email for the project
-        projectOfferingName:
-          title: Project Offering Name
-          type: string
-          description: Name of the offering
-          default: "IBM Access"
         projectContractId:
           title: Contract ID
           type: string
@@ -212,21 +216,64 @@ spec:
         - accountMentorEmail
         - accountTeamName
       properties:
-        projectAssistantPack:
-          title: Assistant Pack in Scope
-          type: string
-          description: Assistant pack in scope
-          default: "Assistant Pack for Quality Engineering"
-        projectProductivityAsset:
-          title: Productivity Asset in Scope
-          type: string
-          description: Productivity asset in scope
-          default: "IBM Ignite Quality and Test Plus (694989T)"
+        projectAssistantPacks:
+          title: Assistants Packs in Scope
+          type: array
+          description: "Everyday Assistants will be available for every team"
+          items:
+            type: string
+            enum:
+              - "Assistant Pack for Adobe"
+              - "IBM Assistant Pack for Business Operation"
+              - "Assistant Pack for Discovery"
+              - "Assistant Pack for Manage"
+              - "Assistant Pack for Migration"
+              - "Assistant Pack for Modernization"
+              - "Assistant Pack for Quality Engineering"
+              - "Assistant Pack for Software Development Lifecycle Build & Test"
+              - "Assistant Pack for Software Development Lifecycle Deploy& Manage"
+              - "Assistant Pack for Software Development Lifecycle Design"
+              - "Assistant Pack for Software Development Lifecycle Discovery"
+          ui:widget: "checkboxes"
+        projectProductivityAssets:
+          title: Productivity Assets in Scope
+          type: array
+          description: "Disclaimer: Not all assets are available in all regions"
+          items:
+            type: string
+            enum:
+              - "Logistics Control Tower (694914E)"
+              - "PRISM (694975S)"
+              - "Advisory Suite for AI and Data (694974B)"
+              - "Customer Service Productivity Tools (694972H)"
+              - "Neudesic Kinisi Data Migration Accelerator (694977N)"
+              - "IBM Consulting AIOps (694971O)"
+              - "IBM Consulting Application Management Suite (694975B)"
+              - "IBM Consulting Cloud Accelerator (694986C)"
+              - "IBM Consulting Commerce Navigator (694972C)"
+              - "IBM Consulting Modern Data Accelerators (694966X)"
+              - "IBM Consulting Transition Engine (694975T)"
+              - "IBM Ignite Quality and Test (694985B)"
+              - "IBM Ignite Quality and Test Plus (694989T)"
+              - "IBM Intelligent Delivery Suite for SAP Applications (694974D)"
+              - "IBM Manage on Mainframe (694975M)"
+              - "IBM Services Devops Commander (694979G / 694979J)"
+          ui:widget: "checkboxes"
         llmModels:
-          title: LLM Models in Scope
-          type: string
-          description: LLM models in scope
-          default: "Not specified"
+          title: LLM models in Scope
+          type: array
+          description: "If the contract specifies LLM model, pls provide the details below.\nNote: The following models are hosted in watsonx, and watsonx instance is available in London, Dallas, Frankfurt, Toronto, Sydney and Tokyo"
+          items:
+            type: string
+            enum:
+              - "Mistral Large (available in London, Dallas, Frankfurt)"
+              - "Llama3 8B Instruct (available in London, Dallas, Frankfurt, Tokyo)"
+              - "Code Llama (available in London, Dallas, Frankfurt, Tokyo)"
+              - "Llama3 70B Instruct (available in London, Dallas, Frankfurt, Tokyo)"
+              - "Granite 34B Code Instruct V2 (available in Dallas)"
+              - "Mixtral 8x7b Instruct (available in London, Dallas, Frankfurt, Tokyo)"
+              - "Granite 13B V2.1 (available in London, Dallas, Frankfurt, Tokyo)"
+          ui:widget: "checkboxes"
         otherAssets:
           title: Other Assets in Scope
           type: string
@@ -246,11 +293,43 @@ spec:
           title: Account Team Name
           type: string
           description: Name of the account team in ICA
-        migrationFromIca:
-          title: Migration from ICA Global Instance
+        migrationFromIcaGlobal:
+          title: Are you migrating from the ICA Global instance (servicesessentials.ibm.com)?
           type: string
-          description: Migration from ICA Global Instance details
-          default: "No migration is required"
+          description: "Onboarded accounts will be structured in ICA as 'Account > Project Team'"
+          ui:widget: "radio"
+          enum:
+            - "Yes"
+            - "No"
+          default: "No"
+          ui:description: "Note: PoC Accounts will not be migrated"
+        migrationAccountsProjectTeams:
+          title: Please provide the names of the Account(s) and their associated Project Teams from the ICA Global instance that need to be migrated to the ICA Regional instance
+          type: string
+          description: "Enter accounts and project teams to migrate"
+          ui:widget: "textarea"
+          default: ""
+        migrationIcaTeams:
+          title: If the Accounts were not created, kindly share the list of ICA Teams names from ICA Global instance be onboarded
+          type: string
+          description: "Example 1: Account 1 > Project Team A, Project Team B\nExample 2: Team A, Team B, Team C"
+          ui:widget: "textarea"
+          default: ""
+        supportTeamLocationRestrictions:
+          title: Support team location restrictions?
+          type: string
+          description: "Are there any geographical, regulatory, or security-based restrictions on the locations from which the support team can operate?"
+          ui:widget: "radio"
+          enum:
+            - "YES"
+            - "NO"
+          default: "NO"
+        supportTeamLocationDetails:
+          title: Pls provide the details of support team location restrictions
+          type: string
+          description: "Details of any geographical, regulatory, or security-based restrictions"
+          ui:widget: "textarea"
+          default: ""
 
   steps:
     - id: triggerWebhook
@@ -266,7 +345,7 @@ spec:
           jira_username: ""
           client_name: ${{ parameters.clientName }}
           project_contact_name: ${{ parameters.projectContactName }}
-          project_offering_name: ${{ parameters.projectOfferingName }}
+          offering_selection: ${{ parameters.offeringSelection }}
           project_contract_id: ${{ parameters.projectContractId }}
           project_contract_end_date: ${{ parameters.projectContractEndDate }}
           project_gbg_id: ${{ parameters.projectGbgId }}
@@ -278,14 +357,18 @@ spec:
           project_region: ${{ parameters.projectRegion }}
           project_market: ${{ parameters.projectMarket }}
           project_sector: ${{ parameters.projectSector }}
-          project_assistant_pack: ${{ parameters.projectAssistantPack }}
-          project_productivity_asset: ${{ parameters.projectProductivityAsset }}
+          project_assistant_packs: ${{ parameters.projectAssistantPacks }}
+          project_productivity_assets: ${{ parameters.projectProductivityAssets }}
           account_coach_email: ${{ parameters.accountCoachEmail }}
           account_mentor_email: ${{ parameters.accountMentorEmail }}
           account_team_name: ${{ parameters.accountTeamName }}
           llm_models: ${{ parameters.llmModels }}
           other_assets: ${{ parameters.otherAssets }}
-          migration_from_ica: ${{ parameters.migrationFromIca }}
+          migration_from_ica_global: ${{ parameters.migrationFromIcaGlobal }}
+          migration_accounts_project_teams: ${{ parameters.migrationAccountsProjectTeams }}
+          migration_ica_teams: ${{ parameters.migrationIcaTeams }}
+          support_team_location_restrictions: ${{ parameters.supportTeamLocationRestrictions }}
+          support_team_location_details: ${{ parameters.supportTeamLocationDetails }}
 
     - id: logSummary
       name: Summary
