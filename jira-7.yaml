@@ -67,12 +67,32 @@ spec:
           type: string
           description: Description of data usage
           default: "No production data or personal/business sensitive content will be used."
+        workingWithProductionData:
+          title: Are you working with production data or handling personal or business-sensitive content?
+          type: string
+          description: "Working with production data or sensitive content"
+          ui:widget: "radio"
+          enum:
+            - "Yes"
+            - "No"
+          default: "No"
+        usingPersonalBusinessInfo:
+          title: Will you be using personal/business sensitive info?
+          type: string
+          description: "Using personal or business sensitive information"
+          ui:widget: "radio"
+          enum:
+            - "No (Use IBM Consulting watsonx.ai license by updating the hourly rates for GenAI in GPE)"
+            - "Yes (Client to procure LLM license)"
+          default: "No (Use IBM Consulting watsonx.ai license by updating the hourly rates for GenAI in GPE)"
         
     - title: Client Information
       required:
         - clientName
         - clientLocation
         - projectRegion
+        - clientPocName
+        - clientPocEmail
       properties:
         clientName:
           title: Client Name
@@ -83,6 +103,15 @@ spec:
           type: string
           description: Location of the client
           default: "Canada"
+        clientPocName:
+          title: Client Point of Contact Name
+          type: string
+          description: Client point of contact name
+        clientPocEmail:
+          title: Client Point of Contact Email
+          type: string
+          format: email
+          description: Client point of contact email
         projectRegion:
           title: Geographical Region
           type: string
@@ -290,7 +319,17 @@ spec:
         - accountCoachEmail
         - accountMentorEmail
         - accountTeamName
+        - desiredOnboardingDate
       properties:
+        desiredOnboardingDate:
+          title: Desired Onboarding Date
+          type: string
+          format: date
+          description: "Desired onboarding date"
+          ui:field: "DatePicker"
+          ui:options:
+            dateFormat: "yyyy-MM-dd"
+            showClearButton: true
         projectAssistantPacks:
           title: Assistants Packs in Scope
           description: "Everyday Assistants will be available for every team"
@@ -354,11 +393,45 @@ spec:
           type: string
           description: Other assets in scope
           default: "Not specified"
-        accountCoachEmail:
-          title: Account Coach Email
+        accountCoach:
+          title: Account Coach
           type: string
-          format: email
-          description: Email of the account coach
+          description: "Account Coach (From Global Team)"
+          enum:
+            - "Charbak Roy (charbak.roy@in.ibm.com)"
+            - "Nagaraj Chinni (nagaraj.chinni@in.ibm.com)"
+            - "Seelan (jebgnana@in.ibm.com)"
+            - "Renjith (renjithrk@in.ibm.com)"
+            - "Rekha (rmadakka@in.ibm.com)"
+            - "Other"
+          default: "Charbak Roy (charbak.roy@in.ibm.com)"
+      dependencies:
+        accountCoach:
+          oneOf:
+            - properties:
+                accountCoach:
+                  enum:
+                    - "Other"
+                accountCoachEmail:
+                  title: Account Coach Email
+                  type: string
+                  format: email
+                  description: Email of the account coach
+              required:
+                - accountCoachEmail
+            - properties:
+                accountCoach:
+                  enum:
+                    - "Charbak Roy (charbak.roy@in.ibm.com)"
+                    - "Nagaraj Chinni (nagaraj.chinni@in.ibm.com)"
+                    - "Seelan (jebgnana@in.ibm.com)"
+                    - "Renjith (renjithrk@in.ibm.com)"
+                    - "Rekha (rmadakka@in.ibm.com)"
+                accountCoachEmail:
+                  type: string
+                  format: email
+                  description: Email of the account coach
+                  ui:widget: hidden
         accountMentorEmail:
           title: Account Mentor Email
           type: string
@@ -390,6 +463,10 @@ spec:
           project_type_of_user: ${{ parameters.projectTypeOfUser }}
           project_no_of_expected_end_users: ${{ parameters.projectNoOfExpectedEndUsers }}
           project_data_usage: ${{ parameters.projectDataUsage }}
+          client_poc_name: ${{ parameters.clientPocName }}
+          client_poc_email: ${{ parameters.clientPocEmail }}
+          desired_onboarding_date: ${{ parameters.desiredOnboardingDate }}
+          account_coach: ${{ parameters.accountCoach }}
           client_location: ${{ parameters.clientLocation }}
           ica_instance: ${{ parameters.icaInstance }}
           project_region: ${{ parameters.projectRegion }}
@@ -397,9 +474,12 @@ spec:
           project_sector: ${{ parameters.projectSector }}
           project_assistant_packs: ${{ parameters.projectAssistantPacks }}
           project_productivity_assets: ${{ parameters.projectProductivityAssets }}
+          account_coach: ${{ parameters.accountCoach }}
           account_coach_email: ${{ parameters.accountCoachEmail }}
           account_mentor_email: ${{ parameters.accountMentorEmail }}
           account_team_name: ${{ parameters.accountTeamName }}
+          working_with_production_data: ${{ parameters.workingWithProductionData }}
+          using_personal_business_info: ${{ parameters.usingPersonalBusinessInfo }}
           llm_models: ${{ parameters.llmModels }}
           other_assets: ${{ parameters.otherAssets }}
           migration_from_ica_global: ${{ parameters.migrationFromIcaGlobal }}
