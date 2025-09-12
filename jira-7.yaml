@@ -293,6 +293,7 @@ spec:
           title: Account Team Name
           type: string
           description: Name of the account team in ICA
+      dependencies:
         migrationFromIcaGlobal:
           title: Are you migrating from the ICA Global instance (servicesessentials.ibm.com)?
           type: string
@@ -303,8 +304,6 @@ spec:
             - "No"
           default: "No"
           ui:description: "Note: PoC Accounts will not be migrated"
-      dependencies:
-        migrationFromIcaGlobal:
           oneOf:
             - properties:
                 migrationFromIcaGlobal:
@@ -326,17 +325,6 @@ spec:
                 migrationFromIcaGlobal:
                   enum:
                     - "No"
-        supportTeamLocationRestrictions:
-          title: Support team location restrictions?
-          type: string
-          description: "Are there any geographical, regulatory, or security-based restrictions on the locations from which the support team can operate?"
-          ui:widget: "radio"
-          enum:
-            - "YES"
-            - "NO"
-          default: "NO"
-      dependencies:
-        supportTeamLocationRestrictions:
           oneOf:
             - properties:
                 supportTeamLocationRestrictions:
