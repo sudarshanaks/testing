@@ -298,8 +298,9 @@ spec:
       properties:
         projectAssistantPacks:
           title: Assistants Packs in Scope
-          type: array
           description: "Everyday Assistants will be available for every team"
+          ui:widget: "CheckboxTree"
+          type: array
           items:
             type: string
             enum:
@@ -314,11 +315,11 @@ spec:
               - "Assistant Pack for Software Development Lifecycle Deploy& Manage"
               - "Assistant Pack for Software Development Lifecycle Design"
               - "Assistant Pack for Software Development Lifecycle Discovery"
-          ui:widget: "checkboxes"
         projectProductivityAssets:
           title: Productivity Assets in Scope
-          type: array
           description: "Disclaimer: Not all assets are available in all regions"
+          ui:widget: "CheckboxTree"
+          type: array
           items:
             type: string
             enum:
@@ -338,11 +339,11 @@ spec:
               - "IBM Intelligent Delivery Suite for SAP Applications (694974D)"
               - "IBM Manage on Mainframe (694975M)"
               - "IBM Services Devops Commander (694979G / 694979J)"
-          ui:widget: "checkboxes"
         llmModels:
           title: LLM models in Scope
-          type: array
           description: "If the contract specifies LLM model, pls provide the details below.\nNote: The following models are hosted in watsonx, and watsonx instance is available in London, Dallas, Frankfurt, Toronto, Sydney and Tokyo"
+          ui:widget: "CheckboxTree"
+          type: array
           items:
             type: string
             enum:
@@ -353,7 +354,6 @@ spec:
               - "Granite 34B Code Instruct V2 (available in Dallas)"
               - "Mixtral 8x7b Instruct (available in London, Dallas, Frankfurt, Tokyo)"
               - "Granite 13B V2.1 (available in London, Dallas, Frankfurt, Tokyo)"
-          ui:widget: "checkboxes"
         otherAssets:
           title: Other Assets in Scope
           type: string
