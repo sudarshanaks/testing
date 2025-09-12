@@ -241,13 +241,8 @@ spec:
                 migrationFromIcaGlobal:
                   enum:
                     - "Yes"
-                migrationAccountsProjectTeams:
-                  title: Please provide the names of the Account(s) and their associated Project Teams from the ICA Global instance that need to be migrated to the ICA Regional instance
-                  type: string
-                  description: "Enter accounts and project teams to migrate"
-                  ui:widget: "textarea"
                 migrationIcaTeams:
-                  title: If the Accounts were not created, kindly share the list of ICA Teams names from ICA Global instance be onboarded
+                  title: Please provide the names of the Account(s) and their associated Project Teams from the ICA Global instance that need to be migrated to the ICA Regional instance, If the Accounts were not created, kindly share the list of ICA Teams names from ICA Global instance be onboarded
                   type: string
                   description: "Example 1: Account 1 > Project Team A, Project Team B\nExample 2: Team A, Team B, Team C"
                   ui:widget: "textarea"
@@ -299,8 +294,8 @@ spec:
         projectAssistantPacks:
           title: Assistants Packs in Scope
           description: "Everyday Assistants will be available for every team"
-          ui:widget: "CheckboxTree"
           type: array
+          uniqueItems: true
           items:
             type: string
             enum:
@@ -318,8 +313,8 @@ spec:
         projectProductivityAssets:
           title: Productivity Assets in Scope
           description: "Disclaimer: Not all assets are available in all regions"
-          ui:widget: "CheckboxTree"
           type: array
+          uniqueItems: true
           items:
             type: string
             enum:
@@ -342,8 +337,8 @@ spec:
         llmModels:
           title: LLM models in Scope
           description: "If the contract specifies LLM model, pls provide the details below.\nNote: The following models are hosted in watsonx, and watsonx instance is available in London, Dallas, Frankfurt, Toronto, Sydney and Tokyo"
-          ui:widget: "CheckboxTree"
           type: array
+          uniqueItems: true
           items:
             type: string
             enum:
@@ -408,7 +403,6 @@ spec:
           llm_models: ${{ parameters.llmModels }}
           other_assets: ${{ parameters.otherAssets }}
           migration_from_ica_global: ${{ parameters.migrationFromIcaGlobal }}
-          migration_accounts_project_teams: ${{ parameters.migrationAccountsProjectTeams }}
           migration_ica_teams: ${{ parameters.migrationIcaTeams }}
           support_team_location_restrictions: ${{ parameters.supportTeamLocationRestrictions }}
           support_team_location_details: ${{ parameters.supportTeamLocationDetails }}
