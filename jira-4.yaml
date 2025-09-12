@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: ica-onboarding-2
-  title: ICA Onboarding V2
+  name: ica-onboarding-3
+  title: ICA Onboarding V3
   description: Create a new Jira issue with automatic duplicate detection
   tags:
     - jira
@@ -14,7 +14,6 @@ spec:
   
   parameters:
 
-
     - title: Project Information
       required:
         - projectContactName
@@ -25,6 +24,7 @@ spec:
         projectContactName:
           title: Project Contact Name
           type: string
+          format: email
           description: Contact name/email for the project
         projectOfferingName:
           title: Project Offering Name
@@ -38,10 +38,12 @@ spec:
         projectContractEndDate:
           title: Contract End Date
           type: string
+          format: date
           description: Project contract end date
-          ui:field: "DateTime"
+          ui:field: "DatePicker"
           ui:options:
             dateFormat: "yyyy-MM-dd"
+            showClearButton: true
         projectGbgId:
           title: GBG ID
           type: string
@@ -93,86 +95,82 @@ spec:
             - "JAPAN"
           default: "AMERICAS"
         
-        americasMarkets:
-          title: Americas Markets
-          type: array
-          ui:widget: hidden
-          items:
-            type: string
-          default:
-            - "Canadian Market"
-            - "Latin America Market"
-            - "US Top Market"
-            - "Latin America"
-            
-        apacMarkets:
-          title: APAC Markets
-          type: array
-          ui:widget: hidden
-          items:
-            type: string
-          default:
-            - "ASEAN"
-            - "ASEAN Market"
-            - "ASEANZK Market"
-            - "Australia/New Zealand"
-            - "Australia/New Zealand Market"
-            - "Greater China Group Market"
-            - "Greater China Market"
-            - "India/South Asia"
-            - "India/South Asia Market"
-            - "Korea Market"
-            
-        emeaMarkets:
-          title: EMEA Markets
-          type: array
-          ui:widget: hidden
-          items:
-            type: string
-          default:
-            - "BeNeLux"
-            - "Central/Eastern Europe"
-            - "Central/Eastern Europe Market"
-            - "DACH"
-            - "DACH Market"
-            - "France Market"
-            - "Italy Market"
-            - "Middle East/Africa"
-            - "Middle East/Africa Market"
-            - "NCEE Market"
-            - "NorBNL Market"
-            - "Nordic"
-            - "Northern Europe Market"
-            - "SPGI"
-            - "SPGI Market"
-            - "UKI"
-            - "UKI Market"
-            
-        japanMarkets:
-          title: Japan Markets
-          type: array
-          ui:widget: hidden
-          items:
-            type: string
-          default:
-            - "Japan Market"
-            
         projectMarket:
           title: Market
           type: string
           description: Project market
           ui:field: "Select"
           ui:options:
-            allowedValues: |
-              {
-                const region = parameters.projectRegion || 'AMERICAS';
-                if (region === 'AMERICAS') return parameters.americasMarkets || [];
-                if (region === 'APAC') return parameters.apacMarkets || [];
-                if (region === 'EMEA') return parameters.emeaMarkets || [];
-                if (region === 'JAPAN') return parameters.japanMarkets || [];
-                return [];
-              }
-            
+            required: true
+          
+        dependencies:
+          projectRegion:
+            oneOf:
+              - properties:
+                  projectRegion:
+                    const: "AMERICAS"
+                  projectMarket:
+                    title: Market
+                    type: string
+                    description: Project market in Americas
+                    enum:
+                      - "Canadian Market"
+                      - "Latin America Market"
+                      - "US Top Market"
+                      - "Latin America"
+              - properties:
+                  projectRegion:
+                    const: "APAC"
+                  projectMarket:
+                    title: Market
+                    type: string
+                    description: Project market in APAC
+                    enum:
+                      - "ASEAN"
+                      - "ASEAN Market"
+                      - "ASEANZK Market"
+                      - "Australia/New Zealand"
+                      - "Australia/New Zealand Market"
+                      - "Greater China Group Market"
+                      - "Greater China Market"
+                      - "India/South Asia"
+                      - "India/South Asia Market"
+                      - "Korea Market"
+              - properties:
+                  projectRegion:
+                    const: "EMEA"
+                  projectMarket:
+                    title: Market
+                    type: string
+                    description: Project market in EMEA
+                    enum:
+                      - "BeNeLux"
+                      - "Central/Eastern Europe"
+                      - "Central/Eastern Europe Market"
+                      - "DACH"
+                      - "DACH Market"
+                      - "France Market"
+                      - "Italy Market"
+                      - "Middle East/Africa"
+                      - "Middle East/Africa Market"
+                      - "NCEE Market"
+                      - "NorBNL Market"
+                      - "Nordic"
+                      - "Northern Europe Market"
+                      - "SPGI"
+                      - "SPGI Market"
+                      - "UKI"
+                      - "UKI Market"
+              - properties:
+                  projectRegion:
+                    const: "JAPAN"
+                  projectMarket:
+                    title: Market
+                    type: string
+                    description: Project market in Japan
+                    enum:
+                      - "Japan Market"
+                    
         projectSector:
           title: Sector
           type: string
@@ -208,10 +206,12 @@ spec:
         accountCoachEmail:
           title: Account Coach Email
           type: string
+          format: email
           description: Email of the account coach
         accountMentorEmail:
           title: Account Mentor Email
           type: string
+          format: email
           description: Email of the account mentor
         accountTeamName:
           title: Account Team Name
@@ -233,6 +233,7 @@ spec:
         headers:
           Content-Type: application/json
         body:
+          client_name: ${{ parameters.clientName }}
           project_contact_name: ${{ parameters.projectContactName }}
           project_offering_name: ${{ parameters.projectOfferingName }}
           project_contract_id: ${{ parameters.projectContractId }}
