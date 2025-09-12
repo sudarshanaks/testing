@@ -84,7 +84,7 @@ spec:
           title: Geographical Region
           type: string
           description: Project geographical region
-          ui:field: "Select"
+          type: string
           ui:options:
             label: "Geographical Region"
           enum:
@@ -92,14 +92,7 @@ spec:
             - "APAC"
             - "EMEA"
             - "JAPAN"
-          default: "AMERICAS"    
-        projectMarket:
-          title: Market
-          type: string
-          description: Project market
-          ui:field: "Select"
-          ui:options:
-            label: "Market"
+          default: "AMERICAS"
                     
         projectSector:
           title: Sector
