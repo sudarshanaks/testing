@@ -84,7 +84,6 @@ spec:
           title: Geographical Region
           type: string
           description: Project geographical region
-          type: string
           ui:options:
             label: "Geographical Region"
           enum:
