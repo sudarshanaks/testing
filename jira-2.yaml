@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: ica-onboarding-1
-  title: ICA Onboarding V1
+  name: ica-onboarding-2
+  title: ICA Onboarding V2
   description: Create a new Jira issue with automatic duplicate detection
   tags:
     - jira
@@ -13,6 +13,7 @@ spec:
   type: service
   
   parameters:
+
 
     - title: Project Information
       required:
@@ -38,6 +39,9 @@ spec:
           title: Contract End Date
           type: string
           description: Project contract end date
+          ui:field: "DateTime"
+          ui:options:
+            dateFormat: "yyyy-MM-dd"
         projectGbgId:
           title: GBG ID
           type: string
@@ -57,11 +61,16 @@ spec:
           type: string
           description: Description of data usage
           default: "No production data or personal/business sensitive content will be used."
-
+        
     - title: Client Information
       required:
+        - clientName
         - clientLocation
       properties:
+        clientName:
+          title: Client Name
+          type: string
+          description: Name of the client
         clientLocation:
           title: Client Location
           type: string
@@ -76,69 +85,94 @@ spec:
           title: Geographical Region
           type: string
           description: Project geographical region
+          ui:field: "Select"
           enum:
             - "AMERICAS"
             - "APAC"
             - "EMEA"
             - "JAPAN"
           default: "AMERICAS"
-        # Dynamic dropdown for market based on region
+        
+        americasMarkets:
+          title: Americas Markets
+          type: array
+          ui:widget: hidden
+          items:
+            type: string
+          default:
+            - "Canadian Market"
+            - "Latin America Market"
+            - "US Top Market"
+            - "Latin America"
+            
+        apacMarkets:
+          title: APAC Markets
+          type: array
+          ui:widget: hidden
+          items:
+            type: string
+          default:
+            - "ASEAN"
+            - "ASEAN Market"
+            - "ASEANZK Market"
+            - "Australia/New Zealand"
+            - "Australia/New Zealand Market"
+            - "Greater China Group Market"
+            - "Greater China Market"
+            - "India/South Asia"
+            - "India/South Asia Market"
+            - "Korea Market"
+            
+        emeaMarkets:
+          title: EMEA Markets
+          type: array
+          ui:widget: hidden
+          items:
+            type: string
+          default:
+            - "BeNeLux"
+            - "Central/Eastern Europe"
+            - "Central/Eastern Europe Market"
+            - "DACH"
+            - "DACH Market"
+            - "France Market"
+            - "Italy Market"
+            - "Middle East/Africa"
+            - "Middle East/Africa Market"
+            - "NCEE Market"
+            - "NorBNL Market"
+            - "Nordic"
+            - "Northern Europe Market"
+            - "SPGI"
+            - "SPGI Market"
+            - "UKI"
+            - "UKI Market"
+            
+        japanMarkets:
+          title: Japan Markets
+          type: array
+          ui:widget: hidden
+          items:
+            type: string
+          default:
+            - "Japan Market"
+            
         projectMarket:
           title: Market
           type: string
           description: Project market
-          dependencies:
-            projectRegion:
-              oneOf:
-                - properties:
-                    projectRegion:
-                      enum: ["AMERICAS"]
-                  enum:
-                    - "Canadian Market"
-                    - "Latin America Market"
-                    - "US Top Market"
-                    - "Latin America"
-                - properties:
-                    projectRegion:
-                      enum: ["APAC"]
-                  enum:
-                    - "ASEAN"
-                    - "ASEAN Market"
-                    - "ASEANZK Market"
-                    - "Australia/New Zealand"
-                    - "Australia/New Zealand Market"
-                    - "Greater China Group Market"
-                    - "Greater China Market"
-                    - "India/South Asia"
-                    - "India/South Asia Market"
-                    - "Korea Market"
-                - properties:
-                    projectRegion:
-                      enum: ["EMEA"]
-                  enum:
-                    - "BeNeLux"
-                    - "Central/Eastern Europe"
-                    - "Central/Eastern Europe Market"
-                    - "DACH"
-                    - "DACH Market"
-                    - "France Market"
-                    - "Italy Market"
-                    - "Middle East/Africa"
-                    - "Middle East/Africa Market"
-                    - "NCEE Market"
-                    - "NorBNL Market"
-                    - "Nordic"
-                    - "Northern Europe Market"
-                    - "SPGI"
-                    - "SPGI Market"
-                    - "UKI"
-                    - "UKI Market"
-                - properties:
-                    projectRegion:
-                      enum: ["JAPAN"]
-                  enum:
-                    - "Japan Market"
-
+          ui:field: "Select"
+          ui:options:
+            allowedValues: |
+              {
+                const region = parameters.projectRegion || 'AMERICAS';
+                if (region === 'AMERICAS') return parameters.americasMarkets || [];
+                if (region === 'APAC') return parameters.apacMarkets || [];
+                if (region === 'EMEA') return parameters.emeaMarkets || [];
+                if (region === 'JAPAN') return parameters.japanMarkets || [];
+                return [];
+              }
+            
         projectSector:
           title: Sector
           type: string
@@ -210,7 +244,7 @@ spec:
           client_location: ${{ parameters.clientLocation }}
           ica_instance: ${{ parameters.icaInstance }}
           project_region: ${{ parameters.projectRegion }}
-          project_market: ${{ parameters.projectMarket | default('') }}
+          project_market: ${{ parameters.projectMarket }}
           project_sector: ${{ parameters.projectSector }}
           project_assistant_pack: ${{ parameters.projectAssistantPack }}
           project_productivity_asset: ${{ parameters.projectProductivityAsset }}
