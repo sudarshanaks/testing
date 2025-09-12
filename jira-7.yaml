@@ -316,7 +316,6 @@ spec:
 
     - title: Project Assets
       required:
-        - accountCoachEmail
         - accountMentorEmail
         - accountTeamName
         - desiredOnboardingDate
