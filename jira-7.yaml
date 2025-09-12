@@ -293,7 +293,6 @@ spec:
           title: Account Team Name
           type: string
           description: Name of the account team in ICA
-      properties:
         migrationFromIcaGlobal:
           title: Are you migrating from the ICA Global instance (servicesessentials.ibm.com)?
           type: string
