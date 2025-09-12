@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: ica-onboarding
-  title: ICA onboarding Request
+  name: ica-onboarding-request
+  title: Request ICA onboarding
   description: Create a new Jira issue with automatic duplicate detection
   tags:
     - jira
@@ -13,6 +13,7 @@ spec:
   type: service
   
   parameters:
+
     - title: Project Information
       required:
         - projectContactName
@@ -82,36 +83,68 @@ spec:
             - "EMEA"
             - "JAPAN"
           default: "AMERICAS"
-        dynamicMarket:
-          title: Select Region First
-          type: string
-          ui:widget: hidden
-          ui:options:
-            rows: 1
-            dependsOn:
-              - projectRegion
-            transformData: |
-              // This is a JavaScript function that returns market options based on selected region
-              function transform(formData) {
-                const regionToMarkets = {
-                  'AMERICAS': ["Canadian Market", "Latin America Market", "US Top Market", "Latin America"],
-                  'APAC': ["ASEAN", "ASEAN Market", "ASEANZK Market", "Australia/New Zealand", "Australia/New Zealand Market", "Greater China Group Market", "Greater China Market", "India/South Asia", "India/South Asia Market", "Korea Market"],
-                  'EMEA': ["BeNeLux", "Central/Eastern Europe", "Central/Eastern Europe Market", "DACH", "DACH Market", "France Market", "Italy Market", "Middle East/Africa", "Middle East/Africa Market", "NCEE Market", "NorBNL Market", "Nordic", "Northern Europe Market", "SPGI", "SPGI Market", "UKI", "UKI Market"],
-                  'JAPAN': ["Japan Market"]
-                };
-                // Default to AMERICAS if no region is selected
-                const region = formData.projectRegion || 'AMERICAS';
-                return regionToMarkets[region] || [];
-              }
-              return transform(formData);
         projectMarket:
           title: Market
           type: string
           description: Project market
           ui:field: Select
-          ui:options:
-            allowedValues: ${{ parameters.dynamicMarket }}
-          default: "Canadian Market"
+          allOf:
+            - if:
+                properties:
+                  projectRegion:
+                    const: "AMERICAS"
+              then:
+                enum:
+                  - "Canadian Market"
+                  - "Latin America Market"
+                  - "US Top Market"
+                  - "Latin America"
+            - if:
+                properties:
+                  projectRegion:
+                    const: "APAC"
+              then:
+                enum:
+                  - "ASEAN"
+                  - "ASEAN Market"
+                  - "ASEANZK Market"
+                  - "Australia/New Zealand"
+                  - "Australia/New Zealand Market"
+                  - "Greater China Group Market"
+                  - "Greater China Market"
+                  - "India/South Asia"
+                  - "India/South Asia Market"
+                  - "Korea Market"
+            - if:
+                properties:
+                  projectRegion:
+                    const: "EMEA"
+              then:
+                enum:
+                  - "BeNeLux"
+                  - "Central/Eastern Europe"
+                  - "Central/Eastern Europe Market"
+                  - "DACH"
+                  - "DACH Market"
+                  - "France Market"
+                  - "Italy Market"
+                  - "Middle East/Africa"
+                  - "Middle East/Africa Market"
+                  - "NCEE Market"
+                  - "NorBNL Market"
+                  - "Nordic"
+                  - "Northern Europe Market"
+                  - "SPGI"
+                  - "SPGI Market"
+                  - "UKI"
+                  - "UKI Market"
+            - if:
+                properties:
+                  projectRegion:
+                    const: "JAPAN"
+              then:
+                enum:
+                  - "Japan Market"
         projectSector:
           title: Sector
           type: string
@@ -172,7 +205,6 @@ spec:
         headers:
           Content-Type: application/json
         body:
-          client_name: ${{ parameters.clientName }}
           project_contact_name: ${{ parameters.projectContactName }}
           project_offering_name: ${{ parameters.projectOfferingName }}
           project_contract_id: ${{ parameters.projectContractId }}
@@ -184,7 +216,7 @@ spec:
           client_location: ${{ parameters.clientLocation }}
           ica_instance: ${{ parameters.icaInstance }}
           project_region: ${{ parameters.projectRegion }}
-          project_market: ${{ parameters.projectMarket | default('Canadian Market') }}
+          project_market: ${{ parameters.projectMarket }}
           project_sector: ${{ parameters.projectSector }}
           project_assistant_pack: ${{ parameters.projectAssistantPack }}
           project_productivity_asset: ${{ parameters.projectProductivityAsset }}
