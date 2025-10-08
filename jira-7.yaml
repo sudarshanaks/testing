@@ -8,6 +8,14 @@ spec:
   owner: default/engineering
   type: service
   parameters:
+    - title: Your Input
+      properties:
+        myInput:
+          type: string
+          title: My Input Field
+          ui:options:
+            style:
+              width: 150px   # Set a custom width (or use px, em, etc.)
     - title: Component details
       properties:
         description:
@@ -16,7 +24,7 @@ spec:
           description: A brief summary of the component.
           ui:widget: textarea
           ui:options:
-            rows: 2 # Renders a shorter text area
+            rows: 1 # Renders a shorter text area
   
     - title: Provide some information
       required:
