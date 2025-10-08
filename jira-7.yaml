@@ -8,6 +8,16 @@ spec:
   owner: default/engineering
   type: service
   parameters:
+    - title: Component details
+      properties:
+        description:
+          title: Description
+          type: string
+          description: A brief summary of the component.
+          ui:widget: textarea
+          ui:options:
+            rows: 2 # Renders a shorter text area
+  
     - title: Provide some information
       required:
         - name
