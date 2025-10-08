@@ -15,7 +15,7 @@ spec:
           title: My Input Field
           ui:options:
             style:
-              width: 150px   # Set a custom width (or use px, em, etc.)
+              width: 30px   # Set a custom width (or use px, em, etc.)
     - title: Component details
       properties:
         description:
