@@ -1,218 +1,33 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: box-file-upload-embedded
-  title: Upload File to Box (Embedded Upload)
-  description: Upload files to Box with embedded file picker directly in the scaffolder form
-  tags:
-    - box
-    - file-upload
-    - storage
-    - embedded
+  name: file-parser
+  title: File parser
+  description: Simple template that parses and prints selected file
+  tags: ["testing"]
 spec:
-  owner: platform-team
+  owner: group:default/default
   type: service
 
   parameters:
-    - title: Upload File to Box
-      description: |
-        Use the embedded file picker below to upload your file directly to Box.
-        The file will be uploaded and you'll receive a File ID to use in the next step.
+    - title: Provide some details
       properties:
-        uploadWidget:
-          title: File Upload Widget
+        data:
           type: string
-          description: |
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
-              <iframe 
-                src="http://localhost:7007/upload-widget.html" 
-                width="100%" 
-                height="450" 
-                frameborder="0" 
-                style="border: 1px solid #dee2e6; border-radius: 8px; background: white;">
-              </iframe>
-            </div>
-          ui:widget: textarea
-          ui:options:
-            rows: 1
-          ui:readonly: true
-          default: "↑ Use the file picker above to upload your file ↑"
-
-    - title: File Information
-      description: After uploading your file above, paste the File ID here
-      required:
-        - boxFileId
-      properties:
-        boxFileId:
-          title: Box File ID
-          type: string
-          description: The File ID will be automatically copied to your clipboard after upload - paste it here
-          ui:autofocus: true
-          ui:help: 'Example: 123456789 (numbers only)'
-          pattern: '^[0-9]+$'
-        
-        targetFolder:
-          title: Move to Folder (Optional)
-          type: string
-          description: Move the uploaded file to a different Box folder
-          ui:help: 'Find folder ID in Box URL: https://app.box.com/folder/FOLDER_ID'
-        
-        fileDescription:
-          title: File Description (Optional)
-          type: string
-          description: Add a description to the uploaded file
-          ui:widget: textarea
-          ui:options:
-            rows: 3
-          ui:help: 'Add any relevant information about this file'
+          format: data-url
+          title: Pick text file
+          ui:backstage:
+            review:
+              show: false
 
   steps:
-    - id: validate-file-id
-      name: Validate File ID
+    - id: parse-data-url
+      name: Parse data url
+      action: parser:data-url
+      input:
+        dataUrl: ${{ parameters.data }}
+    - id: debug
+      name: Debug
       action: debug:log
       input:
-        message: |
-          Validating File ID: ${{ parameters.boxFileId }}
-          Target Folder: ${{ parameters.targetFolder || 'Keep in upload folder' }}
-
-    - id: get-file-info
-      name: Get File Information from Box
-      action: http:backstage:request
-      input:
-        method: GET
-        path: https://api.box.com/2.0/files/${{ parameters.boxFileId }}
-        headers:
-          Authorization: 'Bearer ${BOX_ACCESS_TOKEN}'
-
-    - id: log-file-info
-      name: Log File Information
-      action: debug:log
-      input:
-        message: |
-          File retrieved from Box:
-          - Name: ${{ steps['get-file-info'].output.body.name }}
-          - Size: ${{ steps['get-file-info'].output.body.size }} bytes
-          - Type: ${{ steps['get-file-info'].output.body.type }}
-          - Created: ${{ steps['get-file-info'].output.body.created_at }}
-
-    - id: update-description
-      name: Update File Description
-      if: ${{ parameters.fileDescription }}
-      action: http:backstage:request
-      input:
-        method: PUT
-        path: https://api.box.com/2.0/files/${{ parameters.boxFileId }}
-        headers:
-          Authorization: 'Bearer ${BOX_ACCESS_TOKEN}'
-          Content-Type: 'application/json'
-        body:
-          description: ${{ parameters.fileDescription }}
-
-    - id: move-file
-      name: Move File to Target Folder
-      if: ${{ parameters.targetFolder }}
-      action: http:backstage:request
-      input:
-        method: PUT
-        path: https://api.box.com/2.0/files/${{ parameters.boxFileId }}
-        headers:
-          Authorization: 'Bearer ${BOX_ACCESS_TOKEN}'
-          Content-Type: 'application/json'
-        body:
-          parent:
-            id: ${{ parameters.targetFolder }}
-
-    - id: create-shared-link
-      name: Create Shared Link
-      action: http:backstage:request
-      input:
-        method: PUT
-        path: https://api.box.com/2.0/files/${{ parameters.boxFileId }}
-        headers:
-          Authorization: 'Bearer ${BOX_ACCESS_TOKEN}'
-          Content-Type: 'application/json'
-        body:
-          shared_link:
-            access: 'open'
-
-    - id: get-updated-file-info
-      name: Get Updated File Information
-      action: http:backstage:request
-      input:
-        method: GET
-        path: https://api.box.com/2.0/files/${{ parameters.boxFileId }}
-        headers:
-          Authorization: 'Bearer ${BOX_ACCESS_TOKEN}'
-
-    - id: log-success
-      name: Log Success
-      action: debug:log
-      input:
-        message: |
-          ✅ File processed successfully!
-          
-          File Details:
-          - File ID: ${{ parameters.boxFileId }}
-          - File Name: ${{ steps['get-updated-file-info'].output.body.name }}
-          - File Size: ${{ steps['get-updated-file-info'].output.body.size }} bytes
-          - Description: ${{ parameters.fileDescription || 'None' }}
-          - Folder: ${{ steps['get-updated-file-info'].output.body.parent.name }}
-          - Shared Link: ${{ steps['create-shared-link'].output.body.shared_link.url }}
-
-  output:
-    links:
-      - title: View File in Box
-        url: https://app.box.com/file/${{ parameters.boxFileId }}
-        icon: dashboard
-      - title: Shared Link
-        url: ${{ steps['create-shared-link'].output.body.shared_link.url }}
-        icon: link
-      - title: View Folder in Box
-        url: https://app.box.com/folder/${{ steps['get-updated-file-info'].output.body.parent.id }}
-        icon: folder
-    
-    text:
-      - title: File Upload Summary
-        content: |
-          ## ✅ File Successfully Processed!
-          
-          ### 📄 File Details
-          - **File Name:** ${{ steps['get-updated-file-info'].output.body.name }}
-          - **File ID:** ${{ parameters.boxFileId }}
-          - **File Size:** ${{ steps['get-updated-file-info'].output.body.size }} bytes
-          - **File Type:** ${{ steps['get-updated-file-info'].output.body.type }}
-          - **Created:** ${{ steps['get-updated-file-info'].output.body.created_at }}
-          - **Modified:** ${{ steps['get-updated-file-info'].output.body.modified_at }}
-          
-          ### 📁 Location
-          - **Folder:** ${{ steps['get-updated-file-info'].output.body.parent.name }}
-          - **Folder ID:** ${{ steps['get-updated-file-info'].output.body.parent.id }}
-          
-          ### 📝 Metadata
-          - **Description:** ${{ parameters.fileDescription || 'No description provided' }}
-          - **Owner:** ${{ steps['get-updated-file-info'].output.body.owned_by.name }}
-          
-          ### 🔗 Access Links
-          - **Direct Link:** [View in Box](https://app.box.com/file/${{ parameters.boxFileId }})
-          - **Shared Link:** [Public Link](${{ steps['create-shared-link'].output.body.shared_link.url }})
-          - **Folder Link:** [View Folder](https://app.box.com/folder/${{ steps['get-updated-file-info'].output.body.parent.id }})
-          
-          ### 📊 File Information
-          ```json
-          {
-            "id": "${{ parameters.boxFileId }}",
-            "name": "${{ steps['get-updated-file-info'].output.body.name }}",
-            "size": ${{ steps['get-updated-file-info'].output.body.size }},
-            "type": "${{ steps['get-updated-file-info'].output.body.type }}",
-            "shared_link": "${{ steps['create-shared-link'].output.body.shared_link.url }}"
-          }
-          ```
-          
-          ---
-          
-          **Next Steps:**
-          - Share the file using the shared link above
-          - Download the file from Box if needed
-          - Upload another file by creating a new instance from this template
-
-# Made with Bob
+        message: "Selected file: ${{ steps['parse-data-url'].output.data }}"
