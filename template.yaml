@@ -2,72 +2,40 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: box-upload-test
-  title: Box Upload Test (HTTP Method)
-  description: Test Box file upload using HTTP action
+  title: Box File Upload
+  description: Upload files to Box storage
   tags:
-    - test
     - box
+    - storage
+    - upload
 spec:
   owner: platform-team
-  type: test
+  type: service
 
   parameters:
-    - title: File Configuration
+    - title: File Upload Configuration
       required:
         - fileName
-        - content
+        - fileContent
       properties:
         fileName:
           title: File Name
           type: string
-          description: Name for the uploaded file
-          default: test-upload.txt
-        content:
-          title: File Content
-          type: string
-          description: Content to write to the file
-          ui:widget: textarea
-          default: |
-            Hello from Red Hat Developer Hub!
+          description: Name for the file in Box (with extension)
+          default: document.txt
+          pattern: '^[a-zA-Z0-9._-]+
 
-            This file was uploaded using Box API via HTTP action.
+print_success "Template updated to use HTTP action"
 
-  steps:
-    - id: create-file
-      name: Create Test File
-      action: fetch:template
-      input:
-        contents:
-          - path: upload.txt
-            content: ${{ parameters.content }}
+print_info "Creating catalog-info.yaml..."
 
-    - id: read-file
-      name: Read File Content
-      action: fs:read
-      input:
-        path: upload.txt
-
-    - id: upload-to-box
-      name: Upload to Box via API
-      action: http:backstage:request
-      input:
-        method: POST
-        url: https://upload.box.com/api/2.0/files/content
-        headers:
-          Authorization: 'Bearer ${{ secrets.BOX_ACCESS_TOKEN }}'
-        body:
-          attributes: |
-            {
-              "name": "${{ parameters.fileName }}",
-              "parent": {"id": "${{ secrets.BOX_DEFAULT_FOLDER_ID }}"}
-            }
-          file: ${{ steps['read-file'].output.content }}
-
-  output:
-    text:
-      - title: Status
-        content: File uploaded successfully to Box
-      - title: File Name
-        content: ${{ parameters.fileName }}
-      - title: Folder ID
-        content: ${{ secrets.BOX_DEFAULT_FOLDER_ID }}
+cat > templates/catalog-info.yaml << 'EOF'
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: box-upload-templates
+  description: Box file upload templates
+spec:
+  type: file
+  targets:
+    - ./box-test-template.yaml
