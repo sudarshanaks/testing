@@ -1,41 +1,181 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: box-upload-test
-  title: Box File Upload
-  description: Upload files to Box storage
+  name: box-upload-multi-file
+  title: Multiple Files Upload to Box
+  description: Template demonstrating uploading multiple files to Box
   tags:
     - box
-    - storage
-    - upload
+    - multi-file
+    - documentation
 spec:
   owner: platform-team
-  type: service
-
+  type: documentation
+  
   parameters:
-    - title: File Upload Configuration
+    - title: Project Information
       required:
-        - fileName
-        - fileContent
+        - projectName
+        - owner
       properties:
-        fileName:
-          title: File Name
+        projectName:
+          title: Project Name
           type: string
-          description: Name for the file in Box (with extension)
-          default: document.txt
-          pattern: '^[a-zA-Z0-9._-]+
+          description: Name of the project
+        owner:
+          title: Owner
+          type: string
+          description: Project owner or team
+        includeArchitecture:
+          title: Include Architecture Diagram
+          type: boolean
+          default: true
+          description: Generate and upload architecture documentation
+    
+    - title: Box Settings
+      required:
+        - boxFolderId
+      properties:
+        boxFolderId:
+          title: Box Folder ID
+          type: string
+          description: Target Box folder for all documentation
+  
+  steps:
+    - id: fetch-docs-template
+      name: Fetch Documentation Template
+      action: fetch:template
+      input:
+        url: ./docs-template
+        values:
+          projectName: ${{ parameters.projectName }}
+          owner: ${{ parameters.owner }}
+    
+    - id: upload-readme
+      name: Upload README
+      action: box:upload
+      input:
+        clientId: ${{ secrets.BOX_CLIENT_ID }}
+        clientSecret: ${{ secrets.BOX_CLIENT_SECRET }}
+        accessToken: ${{ secrets.BOX_ACCESS_TOKEN }}
+        refreshToken: ${{ secrets.BOX_REFRESH_TOKEN }}
+        filePath: 'README.md'
+        folderId: ${{ parameters.boxFolderId }}
+        fileName: '${{ parameters.projectName }}-README.md'
+        description: 'Main documentation for ${{ parameters.projectName }}'
+    
+    - id: upload-contributing
+      name: Upload Contributing Guide
+      action: box:upload
+      input:
+        clientId: ${{ secrets.BOX_CLIENT_ID }}
+        clientSecret: ${{ secrets.BOX_CLIENT_SECRET }}
+        accessToken: ${{ secrets.BOX_ACCESS_TOKEN }}
+        refreshToken: ${{ secrets.BOX_REFRESH_TOKEN }}
+        filePath: 'CONTRIBUTING.md'
+        folderId: ${{ parameters.boxFolderId }}
+        fileName: '${{ parameters.projectName }}-CONTRIBUTING.md'
+        description: 'Contributing guidelines for ${{ parameters.projectName }}'
+    
+    - id: upload-license
+      name: Upload License
+      action: box:upload
+      input:
+        clientId: ${{ secrets.BOX_CLIENT_ID }}
+        clientSecret: ${{ secrets.BOX_CLIENT_SECRET }}
+        accessToken: ${{ secrets.BOX_ACCESS_TOKEN }}
+        refreshToken: ${{ secrets.BOX_REFRESH_TOKEN }}
+        filePath: 'LICENSE'
+        folderId: ${{ parameters.boxFolderId }}
+        fileName: '${{ parameters.projectName }}-LICENSE.txt'
+        description: 'License information for ${{ parameters.projectName }}'
+    
+    - id: upload-architecture
+      name: Upload Architecture Documentation
+      if: ${{ parameters.includeArchitecture }}
+      action: box:upload
+      input:
+        clientId: ${{ secrets.BOX_CLIENT_ID }}
+        clientSecret: ${{ secrets.BOX_CLIENT_SECRET }}
+        accessToken: ${{ secrets.BOX_ACCESS_TOKEN }}
+        refreshToken: ${{ secrets.BOX_REFRESH_TOKEN }}
+        filePath: 'docs/ARCHITECTURE.md'
+        folderId: ${{ parameters.boxFolderId }}
+        fileName: '${{ parameters.projectName }}-ARCHITECTURE.md'
+        description: 'Architecture documentation for ${{ parameters.projectName }}'
+    
+    - id: upload-api-docs
+      name: Upload API Documentation
+      action: box:upload
+      input:
+        clientId: ${{ secrets.BOX_CLIENT_ID }}
+        clientSecret: ${{ secrets.BOX_CLIENT_SECRET }}
+        accessToken: ${{ secrets.BOX_ACCESS_TOKEN }}
+        refreshToken: ${{ secrets.BOX_REFRESH_TOKEN }}
+        filePath: 'docs/API.md'
+        folderId: ${{ parameters.boxFolderId }}
+        fileName: '${{ parameters.projectName }}-API.md'
+        description: 'API documentation for ${{ parameters.projectName }}'
+    
+    - id: summary
+      name: Upload Summary
+      action: debug:log
+      input:
+        message: |
+          📚 Documentation uploaded to Box successfully!
+          
+          Project: ${{ parameters.projectName }}
+          Owner: ${{ parameters.owner }}
+          Box Folder: ${{ parameters.boxFolderId }}
+          
+          📄 Uploaded Files:
+          1. README.md
+             - File ID: ${{ steps['upload-readme'].output.fileId }}
+             - URL: ${{ steps['upload-readme'].output.fileUrl }}
+             - Shared: ${{ steps['upload-readme'].output.sharedLink }}
+          
+          2. CONTRIBUTING.md
+             - File ID: ${{ steps['upload-contributing'].output.fileId }}
+             - URL: ${{ steps['upload-contributing'].output.fileUrl }}
+          
+          3. LICENSE
+             - File ID: ${{ steps['upload-license'].output.fileId }}
+             - URL: ${{ steps['upload-license'].output.fileUrl }}
+          
+          4. ARCHITECTURE.md (if included)
+             - File ID: ${{ steps['upload-architecture'].output.fileId }}
+             - URL: ${{ steps['upload-architecture'].output.fileUrl }}
+          
+          5. API.md
+             - File ID: ${{ steps['upload-api-docs'].output.fileId }}
+             - URL: ${{ steps['upload-api-docs'].output.fileUrl }}
+  
+  output:
+    links:
+      - title: README in Box
+        url: ${{ steps['upload-readme'].output.fileUrl }}
+        icon: description
+      - title: Contributing Guide
+        url: ${{ steps['upload-contributing'].output.fileUrl }}
+        icon: people
+      - title: License
+        url: ${{ steps['upload-license'].output.fileUrl }}
+        icon: gavel
+      - title: Architecture Docs
+        url: ${{ steps['upload-architecture'].output.fileUrl }}
+        icon: architecture
+      - title: API Documentation
+        url: ${{ steps['upload-api-docs'].output.fileUrl }}
+        icon: api
+      - title: README Shared Link
+        url: ${{ steps['upload-readme'].output.sharedLink }}
+        icon: share
+    text:
+      - title: Project Name
+        content: ${{ parameters.projectName }}
+      - title: Total Files Uploaded
+        content: '5'
+      - title: Box Folder ID
+        content: ${{ parameters.boxFolderId }}
 
-print_success "Template updated to use HTTP action"
-
-print_info "Creating catalog-info.yaml..."
-
-cat > templates/catalog-info.yaml << 'EOF'
-apiVersion: backstage.io/v1alpha1
-kind: Location
-metadata:
-  name: box-upload-templates
-  description: Box file upload templates
-spec:
-  type: file
-  targets:
-    - ./box-test-template.yaml
+# Made with Bob
