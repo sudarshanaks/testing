@@ -1,0 +1,56 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: file-parser
+  title: File parser + Box upload
+  description: Parses a selected file and uploads it to Box
+  tags: ["testing", "box"]
+spec:
+  owner: group:default/default
+  type: service
+
+  parameters:
+    - title: Provide some details
+      required: [data]
+      properties:
+        data:
+          type: string
+          format: data-url
+          title: Pick text file
+          ui:backstage:
+            review:
+              show: false
+        boxFolderId:
+          type: string
+          title: Box Folder ID
+          description: Target Box folder ID (optional; falls back to backend config/env)
+
+  steps:
+    - id: parse-data-url
+      name: Parse data url
+      action: parser:data-url
+      input:
+        dataUrl: ${{ parameters.data }}
+
+    - id: upload-to-box
+      name: Upload file to Box
+      action: box:upload
+      input:
+        folderId: ${{ parameters.boxFolderId }}
+        fileName: ${{ steps['parse-data-url'].output.fileName }}
+        contentBase64: ${{ steps['parse-data-url'].output.base64 }}
+        contentType: ${{ steps['parse-data-url'].output.mimeType }}
+
+    - id: debug
+      name: Debug
+      action: debug:log
+      input:
+        message: |
+          Parsed file: ${{ steps['parse-data-url'].output.fileName }}
+          MIME: ${{ steps['parse-data-url'].output.mimeType }}
+          Box upload result: ${{ steps['upload-to-box'].output.fileId }} (name: ${{ steps['upload-to-box'].output.fileName }})
+
+  output:
+    links:
+      - title: Box File
+        url: ${{ steps['upload-to-box'].output.webUrl }}
