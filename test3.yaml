@@ -18,6 +18,9 @@ spec:
           title: Select file
           type: string
           format: data-url
+          ui:backstage:
+            review:
+              show: false            
         boxFolderId:
           title: Box Folder ID
           type: string
