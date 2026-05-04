@@ -1,3 +1,4 @@
+---
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
@@ -20,7 +21,7 @@ spec:
           format: data-url
           ui:backstage:
             review:
-              show: false            
+              show: false
         boxFolderId:
           title: Box Folder ID
           type: string

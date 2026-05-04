@@ -1,10 +1,11 @@
+---
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: file-parser
   title: File parser
   description: Simple template that parses and prints selected file
-  tags: ["testing"]
+  tags: [testing]
 spec:
   owner: group:default/default
   type: service

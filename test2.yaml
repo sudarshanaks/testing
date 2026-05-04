@@ -1,10 +1,11 @@
+---
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: file-parser
   title: File parser + Box upload
   description: Parses a selected file and uploads it to Box
-  tags: ["testing", "box"]
+  tags: [testing, box]
 spec:
   owner: group:default/default
   type: service
