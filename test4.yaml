@@ -1,0 +1,42 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: file-upload-to-box
+  title: Upload file to Box (No custom action)
+  description: Uploads a file to Box without parser:data-url
+spec:
+  owner: group:default/default
+  type: service
+
+  parameters:
+    - title: Upload details
+      required:
+        - data
+        - boxFolderId
+      properties:
+        data:
+          title: Select file
+          type: string
+          format: data-url
+          ui:backstage:
+            review:
+              show: false            
+        boxFolderId:
+          title: Box Folder ID
+          type: string
+
+  steps:
+    - id: upload-to-box
+      name: Upload file to Box
+      action: box:upload
+      input:
+        folderId: ${{ parameters.boxFolderId }}
+        fileName: uploaded.txt
+        contentBase64: >-
+          ${{ parameters.data
+            | replace('^data:.*;base64,', '') }}
+
+  output:
+    links:
+      - title: Box File
+        url: ${{ steps['upload-to-box'].output.webUrl }}
