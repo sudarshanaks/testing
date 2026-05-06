@@ -28,7 +28,7 @@ spec:
   steps:
     - id: upload-to-box
       name: Upload file to Box
-      action: box:upload
+      action: file-parser:box-upload
       input:
         folderId: ${{ parameters.boxFolderId }}
         fileName: uploaded.txt
